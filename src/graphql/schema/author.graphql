@@ -1,0 +1,23 @@
+query GetAuthor($where: AuthorWhereUniqueInput!, $stage: Stage! = DRAFT) {
+    author(where: $where, stage: $stage) {
+        id
+        name
+        email
+    }
+}
+
+mutation CreateAuthor($data: AuthorCreateInput!) {
+    createAuthor(data: $data) {
+        id
+        name
+        email
+    }
+}
+
+mutation UpsertAuthor($where: AuthorWhereUniqueInput!, $upsert: AuthorUpsertInput!) {
+    author: upsertAuthor(where: $where, upsert: $upsert) {
+        id
+        name
+        email
+    }
+}
