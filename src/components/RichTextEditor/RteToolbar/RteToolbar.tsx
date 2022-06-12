@@ -1,20 +1,19 @@
-import { IconButton, InputBase, MenuItem, Select, SelectChangeEvent, styled, Toolbar, Tooltip } from "@mui/material";
-import CodeIcon from "@mui/icons-material/Code";
-import { ReactNode, useState } from "react";
+import { Divider, InputBase, MenuItem, Select, SelectChangeEvent, styled, Toolbar } from "@mui/material";
+import { useState } from "react";
 import TextFormatButtons from "./TextFormatButtons";
 
-type RteIconButtonProps = {
-    ariaLabel: string;
-    toolTipTitle: string;
-    children: ReactNode;
-};
-const RteIconButton = ({ ariaLabel, children, toolTipTitle }: RteIconButtonProps) => (
-    <Tooltip title={toolTipTitle}>
-        <IconButton aria-label={ariaLabel} disableTouchRipple={true} sx={{ borderRadius: 1 }}>
-            {children}
-        </IconButton>
-    </Tooltip>
-);
+// type RteIconButtonProps = {
+//     ariaLabel: string;
+//     toolTipTitle: string;
+//     children: ReactNode;
+// };
+// const RteIconButton = ({ ariaLabel, children, toolTipTitle }: RteIconButtonProps) => (
+//     <Tooltip title={toolTipTitle}>
+//         <IconButton aria-label={ariaLabel} disableTouchRipple={true} sx={{ borderRadius: 1 }}>
+//             {children}
+//         </IconButton>
+//     </Tooltip>
+// );
 
 const NoOutlineSelect = styled(InputBase)(({ theme }) => ({
     "& .MuiInputBase-input": {
@@ -41,12 +40,8 @@ const RteToolbar = () => {
                 <MenuItem value="body1">Normal Text</MenuItem>
                 <MenuItem value="h1">Heading 1</MenuItem>
             </Select>
-
+            <Divider orientation="vertical" flexItem />
             <TextFormatButtons />
-            {/* Code button */}
-            <RteIconButton ariaLabel="code" toolTipTitle="code">
-                <CodeIcon />
-            </RteIconButton>
         </Toolbar>
     );
 };

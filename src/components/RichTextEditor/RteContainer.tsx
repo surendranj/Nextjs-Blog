@@ -1,6 +1,5 @@
 import React from "react";
-import { Box, Divider } from "@mui/material";
-import RteToolbar from "./RteToolbar/RteToolbar";
+import { Box } from "@mui/material";
 
 const RteContainer = ({ children }: { children?: React.ReactNode }) => {
     return (
@@ -13,8 +12,7 @@ const RteContainer = ({ children }: { children?: React.ReactNode }) => {
                 "&:focus-within": { borderColor: "black" },
             }}
         >
-            <RteToolbar />
-            <Divider />
+            {/* <RteToolbar/> */}
             {children}
         </Box>
     );

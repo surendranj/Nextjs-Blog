@@ -1,26 +1,28 @@
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { ToggleButton } from "@mui/material";
 import FormatBoldIcon from "@mui/icons-material/FormatBold";
 import FormatItalicIcon from "@mui/icons-material/FormatItalic";
 import FormatUnderlinedIcon from "@mui/icons-material/FormatUnderlined";
-import { useState } from "react";
+import CodeIcon from "@mui/icons-material/Code";
 
 const TextFormatButtons = () => {
-    const [formats, setFormats] = useState<string[]>();
-    const handleFormat = (event: React.MouseEvent<HTMLElement>, newFormats: string[]) => {
-        setFormats(newFormats);
-    };
     return (
-        <ToggleButtonGroup value={formats} onChange={handleFormat} aria-label="text formatting">
-            <ToggleButton value="bold" aria-label="bold">
+        <>
+            <ToggleButton value="bold" aria-label="bold" sx={{ border: 0 }}>
                 <FormatBoldIcon />
             </ToggleButton>
-            <ToggleButton value="italic" aria-label="italic">
+
+            <ToggleButton value="italic" aria-label="italic" sx={{ border: 0 }}>
                 <FormatItalicIcon />
             </ToggleButton>
-            <ToggleButton value="underlined" aria-label="underlined">
+
+            <ToggleButton value="underlined" aria-label="underlined" sx={{ border: 0 }}>
                 <FormatUnderlinedIcon />
             </ToggleButton>
-        </ToggleButtonGroup>
+
+            <ToggleButton value="code" aria-label="code" sx={{ border: 0 }}>
+                <CodeIcon />
+            </ToggleButton>
+        </>
     );
 };
 

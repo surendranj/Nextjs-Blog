@@ -14,7 +14,8 @@
         "isolatedModules": true,
         "jsx": "preserve",
         "incremental": true,
-        "noUnusedLocals": true
+        "noUnusedLocals": true,
+        "downlevelIteration": true
     },
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_document.tss", "pages/api/[...auth0].ts"],
     "exclude": ["node_modules"]
