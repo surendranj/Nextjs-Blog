@@ -1864,7 +1864,7 @@ export type Post = Node & {
   scheduledIn: Array<ScheduledOperation>;
   /** System stage field */
   stage: Stage;
-  tag: PostTag;
+  tag: Array<PostTag>;
   title: Scalars['String'];
   /** The time the document was updated */
   updatedAt: Scalars['DateTime'];
@@ -1940,7 +1940,7 @@ export type PostCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
   postImage: Scalars['String'];
   postSlug?: InputMaybe<Scalars['String']>;
-  tag: PostTag;
+  tag?: InputMaybe<Array<PostTag>>;
   title: Scalars['String'];
   updatedAt?: InputMaybe<Scalars['DateTime']>;
 };
@@ -2071,13 +2071,16 @@ export type PostManyWhereInput = {
   scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
-  tag?: InputMaybe<PostTag>;
-  /** All values that are contained in given list. */
-  tag_in?: InputMaybe<Array<PostTag>>;
-  /** All values that are not equal to given value. */
-  tag_not?: InputMaybe<PostTag>;
-  /** All values that are not contained in given list. */
-  tag_not_in?: InputMaybe<Array<PostTag>>;
+  /** Matches if the field array contains *all* items provided to the filter and order does match */
+  tag?: InputMaybe<Array<PostTag>>;
+  /** Matches if the field array contains *all* items provided to the filter */
+  tag_contains_all?: InputMaybe<Array<PostTag>>;
+  /** Matches if the field array does not contain any of the items provided to the filter */
+  tag_contains_none?: InputMaybe<Array<PostTag>>;
+  /** Matches if the field array contains at least one item provided to the filter */
+  tag_contains_some?: InputMaybe<Array<PostTag>>;
+  /** Matches if the field array does not contains *all* items provided to the filter or order does not match */
+  tag_not?: InputMaybe<Array<PostTag>>;
   title?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   title_contains?: InputMaybe<Scalars['String']>;
@@ -2148,7 +2151,7 @@ export type PostUpdateInput = {
   content?: InputMaybe<Scalars['RichTextAST']>;
   postImage?: InputMaybe<Scalars['String']>;
   postSlug?: InputMaybe<Scalars['String']>;
-  tag?: InputMaybe<PostTag>;
+  tag?: InputMaybe<Array<PostTag>>;
   title?: InputMaybe<Scalars['String']>;
 };
 
@@ -2172,7 +2175,7 @@ export type PostUpdateManyInlineInput = {
 export type PostUpdateManyInput = {
   content?: InputMaybe<Scalars['RichTextAST']>;
   postImage?: InputMaybe<Scalars['String']>;
-  tag?: InputMaybe<PostTag>;
+  tag?: InputMaybe<Array<PostTag>>;
   title?: InputMaybe<Scalars['String']>;
 };
 
@@ -2322,13 +2325,16 @@ export type PostWhereInput = {
   scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
-  tag?: InputMaybe<PostTag>;
-  /** All values that are contained in given list. */
-  tag_in?: InputMaybe<Array<PostTag>>;
-  /** All values that are not equal to given value. */
-  tag_not?: InputMaybe<PostTag>;
-  /** All values that are not contained in given list. */
-  tag_not_in?: InputMaybe<Array<PostTag>>;
+  /** Matches if the field array contains *all* items provided to the filter and order does match */
+  tag?: InputMaybe<Array<PostTag>>;
+  /** Matches if the field array contains *all* items provided to the filter */
+  tag_contains_all?: InputMaybe<Array<PostTag>>;
+  /** Matches if the field array does not contain any of the items provided to the filter */
+  tag_contains_none?: InputMaybe<Array<PostTag>>;
+  /** Matches if the field array contains at least one item provided to the filter */
+  tag_contains_some?: InputMaybe<Array<PostTag>>;
+  /** Matches if the field array does not contains *all* items provided to the filter or order does not match */
+  tag_not?: InputMaybe<Array<PostTag>>;
   title?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   title_contains?: InputMaybe<Scalars['String']>;
@@ -4172,7 +4178,7 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', newPost?: { __typename?: 'Post', id: string, title: string, postImage: string, author?: { __typename?: 'Author', id: string } | null } | null };
+export type CreatePostMutation = { __typename?: 'Mutation', newPost?: { __typename?: 'Post', id: string } | null };
 
 
 export const GetAuthorDocument = `
@@ -4246,11 +4252,6 @@ export const CreatePostDocument = `
     mutation CreatePost($data: PostCreateInput!) {
   newPost: createPost(data: $data) {
     id
-    title
-    postImage
-    author {
-      id
-    }
   }
 }
     `;

@@ -16,7 +16,10 @@ const Appbar = () => {
                         email: user.email,
                     },
                     upsert: {
-                        update: {},
+                        update: {
+                            name: user.name,
+                            email: user.email,
+                        },
                         create: {
                             name: user.name,
                             email: user.email,

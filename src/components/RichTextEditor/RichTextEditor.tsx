@@ -1,20 +1,20 @@
 import React, { useCallback, useState } from "react";
-import { createEditor } from "slate";
-import { Slate, Editable, withReact, RenderElementProps, RenderLeafProps } from "slate-react";
+import { createEditor, Editor } from "slate";
+import { Slate, Editable, withReact, RenderElementProps, RenderLeafProps, RenderPlaceholderProps } from "slate-react";
 
 import { BaseEditor, Descendant } from "slate";
 import { ReactEditor } from "slate-react";
-import { Divider } from "@mui/material";
+import { Box, FormControl, FormHelperText, Typography } from "@mui/material";
 import RteToolbar from "./RteToolbar/RteToolbar";
-import { CodeElement, DefaultElement, Leaf } from "./CustomElement/CustomElement";
-import { CustomEditor } from "../../utils/cutom-editor";
+import { Element, Leaf } from "./CustomElement/CustomElement";
 import { withHistory } from "slate-history";
+import isHotkey from "is-hotkey";
+import { toggleBlock, toggleMark } from "../../utils/cutom-editor";
+import { grey } from "@mui/material/colors";
+import theme from "../../../styles/theme";
 
-type ParagraphElement = { type: "paragraph"; children: CustomText[] };
-type CodeElement = { type: "code"; children: CustomText[] };
-
-type CustomElement = ParagraphElement | CodeElement;
-type CustomText = { text: string; bold?: boolean; code?: boolean; italic?: boolean; underline?: boolean };
+type CustomElement = { type: string; align?: string; children: CustomText[] };
+type CustomText = { text: string; bold?: boolean; italic?: boolean; underline?: boolean };
 
 declare module "slate" {
     interface CustomTypes {
@@ -24,58 +24,89 @@ declare module "slate" {
     }
 }
 
-const initialValue: Descendant[] = [
-    {
-        type: "paragraph",
-        children: [{ text: "A line of text in a paragraph." }],
-    },
-];
+const HOTKEYS: { [key: string]: string } = {
+    "mod+b": "bold",
+    "mod+i": "italic",
+    "mod+u": "underline",
+    "mod+`": "code",
+};
 
-const RichTextEditor = () => {
-    // const editor = useMemo(() => withReact(createEditor()), []);
+type EditorProps = {
+    initialValue: Descendant[];
+    handleEditorChange: (editor: Editor, value: Descendant[]) => void;
+    handleEditorBlur: (event: any) => void;
+    formikContentError: string | undefined;
+    formikContentTouched: boolean | undefined;
+};
+
+const RichTextEditor = ({
+    initialValue,
+    handleEditorChange,
+    handleEditorBlur,
+    formikContentError,
+    formikContentTouched,
+}: EditorProps) => {
     const [editor] = useState(withHistory(withReact(createEditor())));
-
-    const renderElement = useCallback((props: RenderElementProps) => {
-        switch (props.element.type) {
-            case "code":
-                return <CodeElement {...props} />;
-            default:
-                return <DefaultElement {...props} />;
-        }
-    }, []);
+    const renderElement = useCallback((props: RenderElementProps) => <Element {...props} />, []);
     const renderLeaf = useCallback((props: RenderLeafProps) => {
         return <Leaf {...props} />;
     }, []);
 
     return (
-        <Slate editor={editor} value={initialValue}>
-            <RteToolbar />
-            <Divider />
-
-            <Editable
-                renderElement={renderElement}
-                renderLeaf={renderLeaf}
-                onKeyDown={(event) => {
-                    if (!event.ctrlKey) {
-                        return;
-                    }
-
-                    switch (event.key) {
-                        case "`": {
-                            event.preventDefault();
-                            CustomEditor.toggleCodeBlock(editor);
-                            break;
-                        }
-
-                        case "b": {
-                            event.preventDefault();
-                            CustomEditor.toggleBoldMark(editor);
-                            break;
-                        }
-                    }
-                }}
-            />
-        </Slate>
+        <>
+            <Slate editor={editor} value={initialValue} onChange={(value) => handleEditorChange(editor, value)}>
+                <Box
+                    sx={{
+                        outlineWidth: 1,
+                        outlineColor: formikContentTouched && formikContentError ? theme.palette.error.main : grey[400],
+                        outlineStyle: "solid",
+                        borderRadius: 1,
+                        "&:hover": {
+                            outlineColor:
+                                formikContentTouched && formikContentError ? theme.palette.error.main : "black",
+                        },
+                        "&:focus-within": {
+                            outlineWidth: 2,
+                            outlineColor:
+                                formikContentTouched && formikContentError
+                                    ? theme.palette.error.main
+                                    : theme.palette.primary.main,
+                        },
+                    }}
+                >
+                    <RteToolbar />
+                    <Editable
+                        id="content"
+                        style={{
+                            paddingLeft: "14px",
+                            paddingRight: "14px",
+                            paddingTop: "8.5px",
+                            paddingBottom: "8.5px",
+                            minHeight: "30vh",
+                        }}
+                        renderElement={renderElement}
+                        renderLeaf={renderLeaf}
+                        spellCheck
+                        onKeyDown={(event) => {
+                            for (const hotkey in HOTKEYS) {
+                                if (isHotkey(hotkey, event as any)) {
+                                    event.preventDefault();
+                                    const mark = HOTKEYS[hotkey];
+                                    toggleMark(editor, mark);
+                                    toggleBlock(editor, "code");
+                                }
+                            }
+                        }}
+                        onBlur={handleEditorBlur}
+                    />
+                </Box>
+            </Slate>
+            <FormControl>
+                <FormHelperText error={formikContentTouched && formikContentError ? true : false}>
+                    {formikContentTouched && formikContentError}
+                </FormHelperText>
+            </FormControl>
+        </>
     );
 };
 
