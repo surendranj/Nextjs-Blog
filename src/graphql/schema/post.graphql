@@ -3,3 +3,56 @@ mutation CreatePost($data: PostCreateInput!) {
         id
     }
 }
+
+mutation UpsertPost($where: PostWhereUniqueInput!, $upsert: PostUpsertInput!) {
+    upsertPost(where: $where, upsert: $upsert) {
+        id
+    }
+}
+
+query GetPosts {
+    posts(orderBy: publishedAt_DESC, stage: DRAFT) {
+        id
+        createdAt
+        title
+        content {
+            text
+        }
+        postImage
+        author {
+            name
+            image
+        }
+        tag
+    }
+}
+query GetPostIds {
+    postIds: posts(orderBy: createdAt_DESC, stage: DRAFT) {
+        id
+    }
+}
+
+query GetPost($where: PostWhereUniqueInput!, $stage: Stage! = DRAFT) {
+    post(where: $where, stage: $stage) {
+        title
+        content {
+            html
+            raw
+            text
+        }
+        postImage
+        createdAt
+        author {
+            email
+            name
+            image
+        }
+        tag
+    }
+}
+
+mutation DeletePost($id: ID) {
+    deletePost(where: { id: $id }) {
+        id
+    }
+}

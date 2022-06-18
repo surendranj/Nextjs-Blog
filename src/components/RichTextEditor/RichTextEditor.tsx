@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from "react";
 import { createEditor, Editor } from "slate";
-import { Slate, Editable, withReact, RenderElementProps, RenderLeafProps, RenderPlaceholderProps } from "slate-react";
+import { Slate, Editable, withReact, RenderElementProps, RenderLeafProps } from "slate-react";
 
 import { BaseEditor, Descendant } from "slate";
 import { ReactEditor } from "slate-react";
-import { Box, FormControl, FormHelperText, Typography } from "@mui/material";
+import { Box, FormControl, FormHelperText } from "@mui/material";
 import RteToolbar from "./RteToolbar/RteToolbar";
 import { Element, Leaf } from "./CustomElement/CustomElement";
 import { withHistory } from "slate-history";
@@ -32,7 +32,7 @@ const HOTKEYS: { [key: string]: string } = {
 };
 
 type EditorProps = {
-    initialValue: Descendant[];
+    contentVal: Descendant[];
     handleEditorChange: (editor: Editor, value: Descendant[]) => void;
     handleEditorBlur: (event: any) => void;
     formikContentError: string | undefined;
@@ -40,7 +40,7 @@ type EditorProps = {
 };
 
 const RichTextEditor = ({
-    initialValue,
+    contentVal,
     handleEditorChange,
     handleEditorBlur,
     formikContentError,
@@ -52,9 +52,10 @@ const RichTextEditor = ({
         return <Leaf {...props} />;
     }, []);
 
+    editor.children = contentVal;
     return (
         <>
-            <Slate editor={editor} value={initialValue} onChange={(value) => handleEditorChange(editor, value)}>
+            <Slate editor={editor} value={contentVal} onChange={(value) => handleEditorChange(editor, value)}>
                 <Box
                     sx={{
                         outlineWidth: 1,

@@ -77,6 +77,7 @@ export type Asset = Node & {
   updatedBy?: Maybe<User>;
   /** Get the url for the asset with provided transformations applied. */
   url: Scalars['String'];
+  userImageAuthor: Array<Author>;
   /** The file width */
   width?: Maybe<Scalars['Float']>;
 };
@@ -158,6 +159,19 @@ export type AssetUrlArgs = {
   transformation?: InputMaybe<AssetTransformationInput>;
 };
 
+
+/** Asset system model */
+export type AssetUserImageAuthorArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: InputMaybe<Array<Locale>>;
+  orderBy?: InputMaybe<AuthorOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<AuthorWhereInput>;
+};
+
 export type AssetConnectInput = {
   /** Allow to specify document position in list of connected documents, will default to appending at end of list */
   position?: InputMaybe<ConnectPositionInput>;
@@ -185,6 +199,7 @@ export type AssetCreateInput = {
   mimeType?: InputMaybe<Scalars['String']>;
   size?: InputMaybe<Scalars['Float']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
+  userImageAuthor?: InputMaybe<AuthorCreateManyInlineInput>;
   width?: InputMaybe<Scalars['Float']>;
 };
 
@@ -313,6 +328,9 @@ export type AssetManyWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<Scalars['DateTime']>>;
   updatedBy?: InputMaybe<UserWhereInput>;
+  userImageAuthor_every?: InputMaybe<AuthorWhereInput>;
+  userImageAuthor_none?: InputMaybe<AuthorWhereInput>;
+  userImageAuthor_some?: InputMaybe<AuthorWhereInput>;
 };
 
 export enum AssetOrderByInput {
@@ -354,6 +372,7 @@ export type AssetUpdateInput = {
   localizations?: InputMaybe<AssetUpdateLocalizationsInput>;
   mimeType?: InputMaybe<Scalars['String']>;
   size?: InputMaybe<Scalars['Float']>;
+  userImageAuthor?: InputMaybe<AuthorUpdateManyInlineInput>;
   width?: InputMaybe<Scalars['Float']>;
 };
 
@@ -642,6 +661,9 @@ export type AssetWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<Scalars['DateTime']>>;
   updatedBy?: InputMaybe<UserWhereInput>;
+  userImageAuthor_every?: InputMaybe<AuthorWhereInput>;
+  userImageAuthor_none?: InputMaybe<AuthorWhereInput>;
+  userImageAuthor_some?: InputMaybe<AuthorWhereInput>;
   width?: InputMaybe<Scalars['Float']>;
   /** All values greater than the given value. */
   width_gt?: InputMaybe<Scalars['Float']>;
@@ -673,10 +695,12 @@ export type Author = Node & {
   /** Get the document in other stages */
   documentInStages: Array<Author>;
   email: Scalars['String'];
+  followers: Array<Author>;
   /** List of Author versions */
   history: Array<Version>;
   /** The unique identifier */
   id: Scalars['ID'];
+  image?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   post: Array<Post>;
   /** The time the document was published. Null on documents in draft stage. */
@@ -690,6 +714,7 @@ export type Author = Node & {
   updatedAt: Scalars['DateTime'];
   /** User that last updated this document */
   updatedBy?: Maybe<User>;
+  userImage?: Maybe<Asset>;
 };
 
 
@@ -702,6 +727,18 @@ export type AuthorDocumentInStagesArgs = {
   includeCurrent?: Scalars['Boolean'];
   inheritLocale?: Scalars['Boolean'];
   stages?: Array<Stage>;
+};
+
+
+export type AuthorFollowersArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: InputMaybe<Array<Locale>>;
+  orderBy?: InputMaybe<AuthorOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<AuthorWhereInput>;
 };
 
 
@@ -744,6 +781,11 @@ export type AuthorUpdatedByArgs = {
   locales?: InputMaybe<Array<Locale>>;
 };
 
+
+export type AuthorUserImageArgs = {
+  locales?: InputMaybe<Array<Locale>>;
+};
+
 export type AuthorConnectInput = {
   /** Allow to specify document position in list of connected documents, will default to appending at end of list */
   position?: InputMaybe<ConnectPositionInput>;
@@ -762,11 +804,15 @@ export type AuthorConnection = {
 };
 
 export type AuthorCreateInput = {
+  cl4hkkwh22puy01yrgszifasx?: InputMaybe<AuthorCreateManyInlineInput>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   email: Scalars['String'];
+  followers?: InputMaybe<AuthorCreateManyInlineInput>;
+  image?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   post?: InputMaybe<PostCreateManyInlineInput>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
+  userImage?: InputMaybe<AssetCreateOneInlineInput>;
 };
 
 export type AuthorCreateManyInlineInput = {
@@ -837,6 +883,9 @@ export type AuthorManyWhereInput = {
   email_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   email_starts_with?: InputMaybe<Scalars['String']>;
+  followers_every?: InputMaybe<AuthorWhereInput>;
+  followers_none?: InputMaybe<AuthorWhereInput>;
+  followers_some?: InputMaybe<AuthorWhereInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -856,6 +905,25 @@ export type AuthorManyWhereInput = {
   id_not_starts_with?: InputMaybe<Scalars['ID']>;
   /** All values starting with the given string. */
   id_starts_with?: InputMaybe<Scalars['ID']>;
+  image?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  image_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  image_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  image_in?: InputMaybe<Array<Scalars['String']>>;
+  /** All values that are not equal to given value. */
+  image_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  image_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  image_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  image_not_in?: InputMaybe<Array<Scalars['String']>>;
+  /** All values not starting with the given string. */
+  image_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  image_starts_with?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   name_contains?: InputMaybe<Scalars['String']>;
@@ -913,6 +981,7 @@ export type AuthorManyWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<Scalars['DateTime']>>;
   updatedBy?: InputMaybe<UserWhereInput>;
+  userImage?: InputMaybe<AssetWhereInput>;
 };
 
 export enum AuthorOrderByInput {
@@ -922,6 +991,8 @@ export enum AuthorOrderByInput {
   EmailDesc = 'email_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
+  ImageAsc = 'image_ASC',
+  ImageDesc = 'image_DESC',
   NameAsc = 'name_ASC',
   NameDesc = 'name_DESC',
   PublishedAtAsc = 'publishedAt_ASC',
@@ -931,9 +1002,13 @@ export enum AuthorOrderByInput {
 }
 
 export type AuthorUpdateInput = {
+  cl4hkkwh22puy01yrgszifasx?: InputMaybe<AuthorUpdateManyInlineInput>;
   email?: InputMaybe<Scalars['String']>;
+  followers?: InputMaybe<AuthorUpdateManyInlineInput>;
+  image?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
   post?: InputMaybe<PostUpdateManyInlineInput>;
+  userImage?: InputMaybe<AssetUpdateOneInlineInput>;
 };
 
 export type AuthorUpdateManyInlineInput = {
@@ -954,6 +1029,7 @@ export type AuthorUpdateManyInlineInput = {
 };
 
 export type AuthorUpdateManyInput = {
+  image?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
 };
 
@@ -1045,6 +1121,9 @@ export type AuthorWhereInput = {
   email_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   email_starts_with?: InputMaybe<Scalars['String']>;
+  followers_every?: InputMaybe<AuthorWhereInput>;
+  followers_none?: InputMaybe<AuthorWhereInput>;
+  followers_some?: InputMaybe<AuthorWhereInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -1064,6 +1143,25 @@ export type AuthorWhereInput = {
   id_not_starts_with?: InputMaybe<Scalars['ID']>;
   /** All values starting with the given string. */
   id_starts_with?: InputMaybe<Scalars['ID']>;
+  image?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  image_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  image_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  image_in?: InputMaybe<Array<Scalars['String']>>;
+  /** All values that are not equal to given value. */
+  image_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  image_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  image_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  image_not_in?: InputMaybe<Array<Scalars['String']>>;
+  /** All values not starting with the given string. */
+  image_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  image_starts_with?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   name_contains?: InputMaybe<Scalars['String']>;
@@ -1121,6 +1219,7 @@ export type AuthorWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<Scalars['DateTime']>>;
   updatedBy?: InputMaybe<UserWhereInput>;
+  userImage?: InputMaybe<AssetWhereInput>;
 };
 
 /** References Author record uniquely */
@@ -1856,7 +1955,6 @@ export type Post = Node & {
   /** The unique identifier */
   id: Scalars['ID'];
   postImage: Scalars['String'];
-  postSlug?: Maybe<Scalars['String']>;
   /** The time the document was published. Null on documents in draft stage. */
   publishedAt?: Maybe<Scalars['DateTime']>;
   /** User that last published this document */
@@ -1939,7 +2037,6 @@ export type PostCreateInput = {
   content: Scalars['RichTextAST'];
   createdAt?: InputMaybe<Scalars['DateTime']>;
   postImage: Scalars['String'];
-  postSlug?: InputMaybe<Scalars['String']>;
   tag?: InputMaybe<Array<PostTag>>;
   title: Scalars['String'];
   updatedAt?: InputMaybe<Scalars['DateTime']>;
@@ -2033,25 +2130,6 @@ export type PostManyWhereInput = {
   postImage_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   postImage_starts_with?: InputMaybe<Scalars['String']>;
-  postSlug?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  postSlug_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  postSlug_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are contained in given list. */
-  postSlug_in?: InputMaybe<Array<Scalars['String']>>;
-  /** All values that are not equal to given value. */
-  postSlug_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  postSlug_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  postSlug_not_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are not contained in given list. */
-  postSlug_not_in?: InputMaybe<Array<Scalars['String']>>;
-  /** All values not starting with the given string. */
-  postSlug_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  postSlug_starts_with?: InputMaybe<Scalars['String']>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -2125,8 +2203,6 @@ export enum PostOrderByInput {
   IdDesc = 'id_DESC',
   PostImageAsc = 'postImage_ASC',
   PostImageDesc = 'postImage_DESC',
-  PostSlugAsc = 'postSlug_ASC',
-  PostSlugDesc = 'postSlug_DESC',
   PublishedAtAsc = 'publishedAt_ASC',
   PublishedAtDesc = 'publishedAt_DESC',
   TagAsc = 'tag_ASC',
@@ -2140,9 +2216,10 @@ export enum PostOrderByInput {
 export enum PostTag {
   DataScience = 'Data_Science',
   DataVisualization = 'Data_Visualization',
-  MachingLearning = 'Maching_Learning',
+  MachineLearning = 'Machine_Learning',
   Programming = 'Programming',
   React = 'React',
+  Tv = 'TV',
   WebDevelopment = 'Web_Development'
 }
 
@@ -2150,7 +2227,6 @@ export type PostUpdateInput = {
   author?: InputMaybe<AuthorUpdateOneInlineInput>;
   content?: InputMaybe<Scalars['RichTextAST']>;
   postImage?: InputMaybe<Scalars['String']>;
-  postSlug?: InputMaybe<Scalars['String']>;
   tag?: InputMaybe<Array<PostTag>>;
   title?: InputMaybe<Scalars['String']>;
 };
@@ -2287,25 +2363,6 @@ export type PostWhereInput = {
   postImage_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   postImage_starts_with?: InputMaybe<Scalars['String']>;
-  postSlug?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  postSlug_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  postSlug_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are contained in given list. */
-  postSlug_in?: InputMaybe<Array<Scalars['String']>>;
-  /** All values that are not equal to given value. */
-  postSlug_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  postSlug_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  postSlug_not_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are not contained in given list. */
-  postSlug_not_in?: InputMaybe<Array<Scalars['String']>>;
-  /** All values not starting with the given string. */
-  postSlug_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  postSlug_starts_with?: InputMaybe<Scalars['String']>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -2375,7 +2432,6 @@ export type PostWhereInput = {
 /** References Post record uniquely */
 export type PostWhereUniqueInput = {
   id?: InputMaybe<Scalars['ID']>;
-  postSlug?: InputMaybe<Scalars['String']>;
 };
 
 export type PublishLocaleInput = {
@@ -4156,14 +4212,14 @@ export type GetAuthorQueryVariables = Exact<{
 }>;
 
 
-export type GetAuthorQuery = { __typename?: 'Query', author?: { __typename?: 'Author', id: string, name: string, email: string } | null };
+export type GetAuthorQuery = { __typename?: 'Query', author?: { __typename?: 'Author', id: string, name: string, email: string, image?: string | null } | null };
 
 export type CreateAuthorMutationVariables = Exact<{
   data: AuthorCreateInput;
 }>;
 
 
-export type CreateAuthorMutation = { __typename?: 'Mutation', createAuthor?: { __typename?: 'Author', id: string, name: string, email: string } | null };
+export type CreateAuthorMutation = { __typename?: 'Mutation', createAuthor?: { __typename?: 'Author', id: string, name: string, email: string, image?: string | null } | null };
 
 export type UpsertAuthorMutationVariables = Exact<{
   where: AuthorWhereUniqueInput;
@@ -4171,7 +4227,7 @@ export type UpsertAuthorMutationVariables = Exact<{
 }>;
 
 
-export type UpsertAuthorMutation = { __typename?: 'Mutation', author?: { __typename?: 'Author', id: string, name: string, email: string } | null };
+export type UpsertAuthorMutation = { __typename?: 'Mutation', author?: { __typename?: 'Author', id: string, name: string, email: string, image?: string | null } | null };
 
 export type CreatePostMutationVariables = Exact<{
   data: PostCreateInput;
@@ -4180,6 +4236,39 @@ export type CreatePostMutationVariables = Exact<{
 
 export type CreatePostMutation = { __typename?: 'Mutation', newPost?: { __typename?: 'Post', id: string } | null };
 
+export type UpsertPostMutationVariables = Exact<{
+  where: PostWhereUniqueInput;
+  upsert: PostUpsertInput;
+}>;
+
+
+export type UpsertPostMutation = { __typename?: 'Mutation', upsertPost?: { __typename?: 'Post', id: string } | null };
+
+export type GetPostsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, createdAt: any, title: string, postImage: string, tag: Array<PostTag>, content: { __typename?: 'RichText', text: string }, author?: { __typename?: 'Author', name: string, image?: string | null } | null }> };
+
+export type GetPostIdsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPostIdsQuery = { __typename?: 'Query', postIds: Array<{ __typename?: 'Post', id: string }> };
+
+export type GetPostQueryVariables = Exact<{
+  where: PostWhereUniqueInput;
+  stage?: Stage;
+}>;
+
+
+export type GetPostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', title: string, postImage: string, createdAt: any, tag: Array<PostTag>, content: { __typename?: 'RichText', html: string, raw: any, text: string }, author?: { __typename?: 'Author', email: string, name: string, image?: string | null } | null } | null };
+
+export type DeletePostMutationVariables = Exact<{
+  id?: InputMaybe<Scalars['ID']>;
+}>;
+
+
+export type DeletePostMutation = { __typename?: 'Mutation', deletePost?: { __typename?: 'Post', id: string } | null };
+
 
 export const GetAuthorDocument = `
     query GetAuthor($where: AuthorWhereUniqueInput!, $stage: Stage! = DRAFT) {
@@ -4187,6 +4276,7 @@ export const GetAuthorDocument = `
     id
     name
     email
+    image
   }
 }
     `;
@@ -4210,6 +4300,7 @@ export const CreateAuthorDocument = `
     id
     name
     email
+    image
   }
 }
     `;
@@ -4232,6 +4323,7 @@ export const UpsertAuthorDocument = `
     id
     name
     email
+    image
   }
 }
     `;
@@ -4266,5 +4358,132 @@ export const useCreatePostMutation = <
     useMutation<CreatePostMutation, TError, CreatePostMutationVariables, TContext>(
       ['CreatePost'],
       (variables?: CreatePostMutationVariables) => fetcher<CreatePostMutation, CreatePostMutationVariables>(client, CreatePostDocument, variables, headers)(),
+      options
+    );
+export const UpsertPostDocument = `
+    mutation UpsertPost($where: PostWhereUniqueInput!, $upsert: PostUpsertInput!) {
+  upsertPost(where: $where, upsert: $upsert) {
+    id
+  }
+}
+    `;
+export const useUpsertPostMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpsertPostMutation, TError, UpsertPostMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UpsertPostMutation, TError, UpsertPostMutationVariables, TContext>(
+      ['UpsertPost'],
+      (variables?: UpsertPostMutationVariables) => fetcher<UpsertPostMutation, UpsertPostMutationVariables>(client, UpsertPostDocument, variables, headers)(),
+      options
+    );
+export const GetPostsDocument = `
+    query GetPosts {
+  posts(orderBy: publishedAt_DESC, stage: DRAFT) {
+    id
+    createdAt
+    title
+    content {
+      text
+    }
+    postImage
+    author {
+      name
+      image
+    }
+    tag
+  }
+}
+    `;
+export const useGetPostsQuery = <
+      TData = GetPostsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetPostsQueryVariables,
+      options?: UseQueryOptions<GetPostsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetPostsQuery, TError, TData>(
+      variables === undefined ? ['GetPosts'] : ['GetPosts', variables],
+      fetcher<GetPostsQuery, GetPostsQueryVariables>(client, GetPostsDocument, variables, headers),
+      options
+    );
+export const GetPostIdsDocument = `
+    query GetPostIds {
+  postIds: posts(orderBy: createdAt_DESC, stage: DRAFT) {
+    id
+  }
+}
+    `;
+export const useGetPostIdsQuery = <
+      TData = GetPostIdsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetPostIdsQueryVariables,
+      options?: UseQueryOptions<GetPostIdsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetPostIdsQuery, TError, TData>(
+      variables === undefined ? ['GetPostIds'] : ['GetPostIds', variables],
+      fetcher<GetPostIdsQuery, GetPostIdsQueryVariables>(client, GetPostIdsDocument, variables, headers),
+      options
+    );
+export const GetPostDocument = `
+    query GetPost($where: PostWhereUniqueInput!, $stage: Stage! = DRAFT) {
+  post(where: $where, stage: $stage) {
+    title
+    content {
+      html
+      raw
+      text
+    }
+    postImage
+    createdAt
+    author {
+      email
+      name
+      image
+    }
+    tag
+  }
+}
+    `;
+export const useGetPostQuery = <
+      TData = GetPostQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetPostQueryVariables,
+      options?: UseQueryOptions<GetPostQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetPostQuery, TError, TData>(
+      ['GetPost', variables],
+      fetcher<GetPostQuery, GetPostQueryVariables>(client, GetPostDocument, variables, headers),
+      options
+    );
+export const DeletePostDocument = `
+    mutation DeletePost($id: ID) {
+  deletePost(where: {id: $id}) {
+    id
+  }
+}
+    `;
+export const useDeletePostMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<DeletePostMutation, TError, DeletePostMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<DeletePostMutation, TError, DeletePostMutationVariables, TContext>(
+      ['DeletePost'],
+      (variables?: DeletePostMutationVariables) => fetcher<DeletePostMutation, DeletePostMutationVariables>(client, DeletePostDocument, variables, headers)(),
       options
     );

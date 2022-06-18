@@ -5,6 +5,8 @@ declare global {
 
             GRAPHCMS_TOKEN: string;
 
+            GRAPHCMS_DELETE_TOKEN: string;
+
             JWT_SECRET: string;
 
             JWT_EXPIRES_IN: string;

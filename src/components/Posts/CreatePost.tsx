@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import { Descendant, Editor, Node } from "slate";
 import * as yup from "yup";
 import { client } from "../../graphql/client";
-import { PostTag, useCreatePostMutation } from "../../graphql/generated";
+import { GetPostQuery, PostTag, useUpsertPostMutation } from "../../graphql/generated";
 import RichTextEditor from "../RichTextEditor/RichTextEditor";
 
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -32,41 +32,79 @@ const postValidationSchema = yup.object({
     tags: yup.array().of(yup.string().required()).min(1, "Please choose atleast one tag."),
 });
 
-const CreatePost = () => {
+type CreatePostProps = {
+    data?: GetPostQuery | undefined;
+};
+
+const CreatePost = ({ data }: CreatePostProps) => {
     const router = useRouter();
     const { user } = useUser();
-    const mutation = useCreatePostMutation(client);
-    const [initialValue, setInitialValue] = useState<Descendant[]>([
+
+    const [contentVal, setContentVal] = useState<Descendant[]>([
         {
             type: "paragraph",
             children: [{ text: "" }],
         },
     ]);
+    useEffect(() => {
+        if (data) {
+            setContentVal(data?.post?.content.raw.children);
+        }
+    }, [data]);
+
+    type FormikInitVal = {
+        title: string | undefined;
+        postImage: string | undefined;
+    };
+    const [formikInitVal, setFormikInitVal] = useState<FormikInitVal>({ title: "", postImage: "" });
+    useEffect(() => {
+        if (data) {
+            setFormikInitVal({ title: data?.post?.title, postImage: data?.post?.postImage });
+        }
+    }, [data]);
+
+    const [tags, setTags] = useState<string[]>([]);
+    useEffect(() => {
+        if (data) {
+            setTags(data?.post?.tag!);
+        }
+    }, [data]);
+
+    const mutation = useUpsertPostMutation(client);
+
     const formik = useFormik({
         initialValues: {
-            title: "",
-            content: initialValue.map((n) => Node.string(n)).join("\n"),
-            postImage: "",
-            tags: [],
+            title: formikInitVal.title || "",
+            content: contentVal.map((n) => Node.string(n)).join("\n"),
+            postImage: formikInitVal.postImage || "",
+            tags,
         },
+        enableReinitialize: true,
         validationSchema: postValidationSchema,
-        onSubmit: async (values, { resetForm }) => {
+        onSubmit: (values, { resetForm }) => {
             const { title, postImage, tags } = values;
             const email = user?.email;
+
+            const data = {
+                title,
+                postImage,
+                content: {
+                    children: contentVal,
+                },
+                author: {
+                    connect: {
+                        email,
+                    },
+                },
+                tag: tags as PostTag[],
+            };
             mutation.mutate({
-                data: {
-                    title,
-                    postImage,
-                    content: {
-                        children: initialValue,
-                    },
-                    author: {
-                        connect: {
-                            email,
-                        },
-                    },
-                    tag: tags,
-                    postSlug: title,
+                where: {
+                    id: (router.query.postId as string) || "",
+                },
+                upsert: {
+                    update: data,
+                    create: data,
                 },
             });
 
@@ -79,14 +117,13 @@ const CreatePost = () => {
     const handleEditorChange = (editor: Editor, value: Descendant[]) => {
         const isAstChange = editor.operations.some((op) => "set_selection" !== op.type);
         if (isAstChange) {
-            setInitialValue(value);
+            setContentVal(value);
         }
         formik.handleChange({
             target: { name: "content", value: value.map((n) => Node.string(n)).join("\n") },
         });
     };
 
-    const [tags, setTags] = useState<string[]>([]);
     const handleTagChange = (event: SelectChangeEvent<typeof tags>) => {
         const {
             target: { value },
@@ -129,14 +166,15 @@ const CreatePost = () => {
                         helperText={formik.touched.title && formik.errors.title}
                         size="small"
                     />
-
-                    <RichTextEditor
-                        handleEditorChange={handleEditorChange}
-                        handleEditorBlur={handleEditorBlur}
-                        initialValue={initialValue}
-                        formikContentError={formik.errors.content}
-                        formikContentTouched={formik.touched.content}
-                    />
+                    {
+                        <RichTextEditor
+                            handleEditorChange={handleEditorChange}
+                            handleEditorBlur={handleEditorBlur}
+                            contentVal={contentVal}
+                            formikContentError={formik.errors.content}
+                            formikContentTouched={formik.touched.content}
+                        />
+                    }
 
                     <TextField
                         id="postImage"

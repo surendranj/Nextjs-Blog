@@ -3,6 +3,7 @@ query GetAuthor($where: AuthorWhereUniqueInput!, $stage: Stage! = DRAFT) {
         id
         name
         email
+        image
     }
 }
 
@@ -11,6 +12,7 @@ mutation CreateAuthor($data: AuthorCreateInput!) {
         id
         name
         email
+        image
     }
 }
 
@@ -19,5 +21,6 @@ mutation UpsertAuthor($where: AuthorWhereUniqueInput!, $upsert: AuthorUpsertInpu
         id
         name
         email
+        image
     }
 }

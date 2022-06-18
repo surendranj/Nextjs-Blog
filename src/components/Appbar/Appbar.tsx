@@ -1,12 +1,12 @@
 import { useUser } from "@auth0/nextjs-auth0";
-import { AppBar, Avatar, Box, Button, Container, Toolbar, Typography } from "@mui/material";
-import Link from "next/link";
+import { AppBar, Avatar, Box, Button, Container, Toolbar } from "@mui/material";
 import { useEffect } from "react";
 import { client } from "../../graphql/client";
-import { UpsertAuthorDocument } from "../../graphql/generated";
+import { UpsertAuthorDocument, useGetAuthorQuery } from "../../graphql/generated";
 
 const Appbar = () => {
     const { user, isLoading } = useUser();
+    const { data } = useGetAuthorQuery(client, { where: { email: user?.email || "" } });
 
     useEffect(() => {
         const createAuthor = async () => {
@@ -17,18 +17,20 @@ const Appbar = () => {
                     },
                     upsert: {
                         update: {
-                            name: user.name,
+                            name: user.nickname,
                             email: user.email,
+                            image: user.picture,
                         },
                         create: {
-                            name: user.name,
+                            name: user.nickname,
                             email: user.email,
+                            image: user.picture,
                         },
                     },
                 }));
         };
         createAuthor();
-    });
+    }, [user]);
 
     return (
         <AppBar position="sticky">
@@ -37,27 +39,27 @@ const Appbar = () => {
                     {/* Logo */}
                     <Box sx={{ width: 50 }}>
                         {/* <Image src={Logo} alt="logo" priority /> */}
-                        <Link href="/">
-                            <Typography>Logo</Typography>
-                        </Link>
+                        <Button color="inherit" href="/">
+                            Home
+                        </Button>
                     </Box>
                     {!isLoading && (
                         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "2rem" }}>
-                            {!user && (
-                                <Button color="inherit" href="/api/auth/login">
-                                    Login
-                                </Button>
-                            )}
-                            {user && (
+                            <Button color="inherit" href="/post/create-post">
+                                Write
+                            </Button>
+
+                            {user ? (
                                 <>
-                                    <Button color="inherit" href="/posts/create-post">
-                                        Write
-                                    </Button>
                                     <Button color="inherit" href="/api/auth/logout">
                                         Logout
                                     </Button>
-                                    <Avatar alt={user?.name || ""} src={user?.picture || ""} />
+                                    <Avatar alt={data?.author?.name || ""} src={data?.author?.image || ""} />
                                 </>
+                            ) : (
+                                <Button color="inherit" href="/api/auth/login">
+                                    Login
+                                </Button>
                             )}
                         </Box>
                     )}
